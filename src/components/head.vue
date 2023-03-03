@@ -5,34 +5,26 @@
       <ul class="link flex-1">
         <li class="flex-1"></li>
         <li>
-          <!-- <a href="" @click.stop.prevent="handleSetLanguage">{{ language }}</a> -->
+          <a href="" @click.stop.prevent="handleSetLanguage">{{ language }}</a>
         </li>
       </ul>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { useLanguageStore } from '@/stores'
-
-import { useI18n } from 'vue-i18n'
-import i18n from '@/lang/index'
-// const t = i18n.global.t
-// const { t } = useI18n()
+import { useLanguageStore } from '../stores'
+import i18n from '../lang'
 
 let languageStore = useLanguageStore()
 let language = computed((string) => {
   return languageStore.language
 })
-const locale = ref();
-
 function handleSetLanguage() {
-
-  console.log('t',i18n)
   if (languageStore.language === 'zh-cn') {
-      i18n.locale = 'en'
+    i18n.global.locale.value = 'en'
     languageStore.setLanguage('en')
   } else {
-      i18n.locale = 'zh-cn'
+    i18n.global.locale.value = 'zh-cn'
     languageStore.setLanguage('zh-cn')
   }
 }

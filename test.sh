@@ -18,7 +18,7 @@ touch .nojekyll
 cd ..
 scp -r dist root@54.255.13.84:/root/code/$PROJECT-dist
 
-GITHUB_ACCESS_TOKEN='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'
+GITHUB_ACCESS_TOKEN='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'
 
 ssh root@54.255.13.84 << ENDSSH
 cd /root/code/;
