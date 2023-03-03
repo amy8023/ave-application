@@ -18,3 +18,10 @@ export function getSingleApplyToken(id: string) {
     }
   })
 }
+// get chain config
+export function getChainList() {
+  return request({
+    method: 'get',
+    url: '/admin/v1/swapconf/chains'
+  })
+}

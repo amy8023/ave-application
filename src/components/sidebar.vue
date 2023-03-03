@@ -7,10 +7,10 @@
       </template>
       <el-menu-item index="2">Token管理</el-menu-item>
     </el-sub-menu>
-    <el-menu-item index="3">
+    <!-- <el-menu-item index="3">
       <el-icon><HelpFilled /></el-icon>
       <span>设置</span>
-    </el-menu-item>
+    </el-menu-item> -->
   </el-menu>
 </template>
 

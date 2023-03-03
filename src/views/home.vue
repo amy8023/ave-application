@@ -36,9 +36,15 @@
               <el-input v-model="base_info.token" clearable></el-input>
             </el-form-item>
             <el-form-item label="主链" prop="chain">
-              <el-input v-model="base_info.chain" clearable></el-input>
+              <el-select v-model="base_info.chain" filterable placeholder="Select" clearable>
+                <el-option
+                  v-for="item in chainList"
+                  :key="item.net_name"
+                  :label="item.net_name"
+                  :value="item.net_name"
+                />
+              </el-select>
             </el-form-item>
-
             <el-form-item label="总供应量" prop="totol_supply">
               <el-input v-model="base_info.totol_supply" clearable></el-input>
             </el-form-item>
@@ -103,7 +109,7 @@
         </el-col>
       </el-row>
     </el-card>
-    <span class="title">合约检测信息</span>
+    <span class="title">合约机制</span>
     <el-card class="box-card" shadow="never">
       <el-row :gutter="10">
         <el-col
@@ -114,8 +120,7 @@
           :xl="{ span: 12, offset: 6 }"
         >
           <el-form :model="contract_info" :rules="rules" ref="form2" label-width="auto">
-            <el-tabs tab-position="left" class="demo-tabs" stretch>
-              <el-tab-pane label="买入">
+                <div class="buy-in">买入</div>
                 <el-form-item :label="$t('tm_buy_tax_for_fund')">
                   <el-input
                     v-model="contract_info.tm_buy_tax_for_fund"
@@ -165,8 +170,7 @@
                     :placeholder="`请输入买入${$t('tm_buy_tax_for_other')}`"
                   ></el-input>
                 </el-form-item>
-              </el-tab-pane>
-              <el-tab-pane label="卖出">
+                <div class="buy-in">卖出</div>
                 <el-form-item :label="$t('tm_sell_tax_for_fund')">
                   <el-input
                     v-model="contract_info.tm_sell_tax_for_fund"
@@ -216,8 +220,7 @@
                     :placeholder="`请输入卖出${$t('tm_sell_tax_for_other')}`"
                   ></el-input>
                 </el-form-item>
-              </el-tab-pane>
-            </el-tabs>
+
             <el-form-item :label="$t('tm_max_hold_amount_per_wallet')">
               <el-input
                 v-model="contract_info.tm_max_hold_amount_per_wallet"
@@ -248,7 +251,7 @@
       </el-row>
     </el-card>
 
-    <span class="title">钱包地址</span>
+    <span class="title">地址备注</span>
     <el-card class="box-card mb-100" shadow="never">
       <el-row :gutter="10">
         <el-col
@@ -324,7 +327,7 @@
 </template>
 
 <script>
-import { getSingleApplyToken, applyToken } from '@/api/index.ts'
+import { getSingleApplyToken, applyToken, getChainList } from '@/api/index.ts'
 import 'vue-cropper/dist/index.css'
 import { VueCropper } from 'vue-cropper'
 
@@ -410,7 +413,7 @@ export default {
       pageNO: 1,
       pageSize: 20,
       total: 0,
-      active: 2
+      chainList: []
     }
   },
   watch: {
@@ -423,7 +426,29 @@ export default {
       immediate: true
     }
   },
+  mounted () {
+    this.getChainList()
+  },
   methods: {
+    getChainList() {
+      this.dataLoading = true
+      getChainList()
+        .then(res => {
+          if (res?.length > 0) {
+            this.keys = Object.keys(res[0])
+            this.keys.forEach(i => {
+              this.form[i] = ''
+            })
+          }
+          this.chainList = res || []
+        })
+        .catch(() => {
+          this.chainList = []
+        })
+        .finally(() => {
+          this.dataLoading = false
+        })
+    },
     getSingleApplyToken(id) {
       this.dataLoading = true
       getSingleApplyToken(id)
@@ -608,5 +633,10 @@ input#uploaderFile-1 {
 }
 .el-button {
   padding: 15px 30px;
+}
+.buy-in{
+  text-align: left;
+  font-size: 16px;
+  font-weight: bold;
 }
 </style>
