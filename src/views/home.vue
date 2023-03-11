@@ -9,12 +9,12 @@
           label-width="auto"
           @submit.prevent="search"
         >
+          <span class="title">{{ $t('search') }}</span>
           <div class="box-card">
-            <span class="title">{{ $t('search') }}</span>
             <el-row :gutter="10">
               <el-col :xs="24" :sm="24" :md="10">
                 <el-form-item label="Token" prop="base_info.token">
-                  <el-input v-model="searchObj.base_info.token" clearable></el-input>
+                  <el-input v-model.trim="searchObj.base_info.token" clearable></el-input>
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :sm="24" :md="6">
@@ -53,13 +53,14 @@
           label-width="auto"
           @submit.prevent="submitForm"
         >
+          <span class="title">{{ $t('basic') }}</span>
           <div class="box-card">
-            <span class="title">{{ $t('basic') }}</span>
             <el-form-item label="Logo" v-if="form.base_info.logoUrl">
               <el-image
-                v-if="form.base_info.logoUrl"
                 style="width: 60px; height: 60px; border-radius: 50%"
-                :src="form.base_info.logoUrl"
+                :src="
+                  form.base_info.logoUrl || formatIcon(form.base_info.token, form.base_info.chain)
+                "
                 fit="fill"
               >
                 <template #error>
@@ -98,7 +99,9 @@
               {{ form.base_info.symbol || '--' }}
             </el-form-item>
             <el-form-item label="token" prop="base_info.token">
-              {{ form.base_info.token || '--' }}
+              {{
+                form.base_info.token?.slice(0, 2) + '...' + form.base_info.token?.slice(-4) || '--'
+              }}
             </el-form-item>
             <el-form-item :label="$t('chain')" prop="base_info.chain">
               {{ form.base_info.chain || '--' }}
@@ -152,58 +155,6 @@
                 clearable
               ></el-input>
             </el-form-item>
-
-            <!-- <el-form-item label="blog" prop="blog">
-              <el-input
-                v-model.trim="form.base_info.blog"
-                :placeholder="`${$t('pls')}blog`"
-                clearable
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="reddit" prop="reddit">
-              <el-input
-                v-model.trim="form.base_info.reddit"
-                :placeholder="`${$t('pls')}reddit`"
-                clearable
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="slack" prop="slack">
-              <el-input
-                v-model.trim="form.base_info.slack"
-                :placeholder="`${$t('pls')}slack`"
-                clearable
-              ></el-input>
-            </el-form-item>
-
-            <el-form-item label="facebook" prop="facebook">
-              <el-input
-                v-model.trim="form.base_info.facebook"
-                :placeholder="`${$t('pls')}facebook`"
-                clearable
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="bitcointalk" prop="bitcointalk">
-              <el-input
-                v-model.trim="form.base_info.bitcointalk"
-                :placeholder="`${$t('pls')}bitcointalk`"
-                clearable
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="wechat" prop="wechat">
-              <el-input
-                v-model.trim="form.base_info.wechat"
-                :placeholder="`${$t('pls')}wechat`"
-                clearable
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="linkedin" prop="linkedin">
-              <el-input
-                v-model.trim="form.base_info.linkedin"
-                :placeholder="`${$t('pls')}linkedin`"
-                clearable
-              ></el-input>
-            </el-form-item> -->
-
             <el-form-item label="discord" prop="discord">
               <el-input
                 v-model.trim="form.base_info.discord"
@@ -212,166 +163,197 @@
               ></el-input>
             </el-form-item>
 
-            <el-form-item label="qq" prop="qq">
+            <el-form-item label="QQ" prop="qq">
               <el-input
                 v-model.trim="form.base_info.qq"
                 :placeholder="`${$t('pls')}qq`"
                 clearable
               ></el-input>
             </el-form-item>
-            <!-- <el-form-item label="email" prop="email">
-              <el-input
-                v-model.trim="form.base_info.email"
-                :placeholder="`${$t('pls')}email`"
-                clearable
-              ></el-input>
-            </el-form-item> -->
-            <!-- <el-form-item label="description" prop="description">
-              <el-input
-                v-model.trim="form.base_info.description"
-                :rows="3"
-                type="textarea"
-                :placeholder="`${$t('pls')}description`"
-                clearable
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="intro_cn" prop="intro_cn">
-              <el-input
-                v-model.trim="form.base_info.intro_cn"
-                :rows="3"
-                type="textarea"
-                :placeholder="`${$t('pls')}intro_cn`"
-                clearable
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="intro_en" prop="intro_en">
-              <el-input
-                v-model.trim="form.base_info.intro_en"
-                :rows="3"
-                type="textarea"
-                :placeholder="`${$t('pls')}intro_en`"
-                clearable
-              ></el-input>
-            </el-form-item> -->
           </div>
+          <span class="title">{{ $t('mechanismIntroduction') }}</span>
           <div class="box-card">
-            <span class="title">{{ $t('mechanismIntroduction') }}</span>
-            <div class="buy-in">{{ $t('buy') }}</div>
-            <el-form-item :label="$t('buy_tax')" prop="contract_info.buy_tax">
-              <el-input
-                v-model.number="form.contract_info.buy_tax"
-                clearable
-                :placeholder="`${$t('pls')}${$t('buy_tax')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_buy_tax_for_fund')" prop="contract_info.tm_buy_tax_for_fund">
-              <el-input
-                v-model.number="form.contract_info.tm_buy_tax_for_fund"
-                clearable
-                :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_fund')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_buy_tax_for_burn')" prop="contract_info.tm_buy_tax_for_burn">
-              <el-input
-                v-model.number="form.contract_info.tm_buy_tax_for_burn"
-                clearable
-                :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_burn')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_buy_tax_for_lp')" prop="contract_info.tm_buy_tax_for_lp">
-              <el-input
-                v-model.number="form.contract_info.tm_buy_tax_for_lp"
-                clearable
-                :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_lp')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_buy_tax_for_team')" prop="contract_info.tm_buy_tax_for_team">
-              <el-input
-                v-model.number="form.contract_info.tm_buy_tax_for_team"
-                clearable
-                :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_team')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_buy_tax_for_holders')" prop="contract_info.tm_buy_tax_for_holders">
-              <el-input
-                v-model.number="form.contract_info.tm_buy_tax_for_holders"
-                clearable
-                :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_holders')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_buy_tax_for_lp_holders')" prop="contract_info.tm_buy_tax_for_lp_holders">
-              <el-input
-                v-model.number="form.contract_info.tm_buy_tax_for_lp_holders"
-                clearable
-                :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_lp_holders')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_buy_tax_for_other')" prop="contract_info.tm_buy_tax_for_other">
-              <el-input
-                v-model.number="form.contract_info.tm_buy_tax_for_other"
-                clearable
-                :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_other')}`"
-              ></el-input>
-            </el-form-item>
-            <div class="buy-in">{{ $t('sell') }}</div>
-            <el-form-item :label="$t('sell_tax')" prop="contract_info.sell_tax">
-              <el-input
-                v-model.number="form.contract_info.sell_tax"
-                clearable
-                :placeholder="`${$t('pls')}${$t('sell_tax')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_sell_tax_for_fund')" prop="contract_info.tm_sell_tax_for_fund">
-              <el-input
-                v-model.number="form.contract_info.tm_sell_tax_for_fund"
-                clearable
-                :placeholder="`${$t('pls')}${$t('sell')}${$t('tm_buy_tax_for_fund')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_sell_tax_for_burn')" prop="contract_info.tm_sell_tax_for_burn">
-              <el-input
-                v-model.number="form.contract_info.tm_sell_tax_for_burn"
-                clearable
-                :placeholder="`${$t('pls')}${$t('sell')}${$t('tm_buy_tax_for_burn')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_sell_tax_for_lp')" prop="contract_info.tm_sell_tax_for_lp">
-              <el-input
-                v-model.number="form.contract_info.tm_sell_tax_for_lp"
-                clearable
-                :placeholder="`请${$t('pls')}${$t('sell')}${$t('tm_sell_tax_for_lp')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_sell_tax_for_team')" prop="contract_info.tm_sell_tax_for_team">
-              <el-input
-                v-model.number="form.contract_info.tm_sell_tax_for_team"
-                clearable
-                :placeholder="`${$t('pls')}${$t('sell')}${$t('tm_sell_tax_for_team')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_sell_tax_for_holders')" prop="contract_info.tm_sell_tax_for_holders">
-              <el-input
-                v-model.number="form.contract_info.tm_sell_tax_for_holders"
-                clearable
-                :placeholder="`${$t('pls')}${$t('sell')}${$t('tm_sell_tax_for_holders')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_sell_tax_for_lp_holders')" prop="contract_info.tm_sell_tax_for_lp_holders">
-              <el-input
-                v-model.number="form.contract_info.tm_sell_tax_for_lp_holders"
-                clearable
-                :placeholder="`${$t('pls')}${$t('sell')}${$t('tm_sell_tax_for_lp_holders')}`"
-              ></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('tm_sell_tax_for_other')"  prop="contract_info.tm_sell_tax_for_other">
-              <el-input
-                v-model.number="form.contract_info.tm_sell_tax_for_other"
-                clearable
-                :placeholder="`${$t('pls')}${$t('sell')}${$t('tm_sell_tax_for_other')}`"
-              ></el-input>
-            </el-form-item>
+            <el-collapse>
+              <el-collapse-item>
+                <template #title>
+                  <el-form-item class="flex-1" :label="$t('buy_tax')" prop="contract_info.buy_tax">
+                    <el-input
+                      v-model="form.contract_info.buy_tax"
+                      clearable
+                      type="number"
+                      min ="0"
+                      max="100"
+                      step="any"
+                      :placeholder="`${$t('pls')}${$t('buy_tax')}`"
+                    ></el-input>
+                  </el-form-item>
+                </template>
+                <div class="content">
+                  <el-form-item
+                    :label="$t('tm_buy_tax_for_fund')"
+                    prop="contract_info.tm_buy_tax_for_fund"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_buy_tax_for_fund"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_fund')}`"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('tm_buy_tax_for_burn')"
+                    prop="contract_info.tm_buy_tax_for_burn"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_buy_tax_for_burn"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_burn')}`"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('tm_buy_tax_for_lp')"
+                    prop="contract_info.tm_buy_tax_for_lp"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_buy_tax_for_lp"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_lp')}`"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('tm_buy_tax_for_team')"
+                    prop="contract_info.tm_buy_tax_for_team"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_buy_tax_for_team"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_team')}`"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('tm_buy_tax_for_holders')"
+                    prop="contract_info.tm_buy_tax_for_holders"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_buy_tax_for_holders"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_holders')}`"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('tm_buy_tax_for_lp_holders')"
+                    prop="contract_info.tm_buy_tax_for_lp_holders"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_buy_tax_for_lp_holders"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_lp_holders')}`"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('tm_buy_tax_for_other')"
+                    prop="contract_info.tm_buy_tax_for_other"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_buy_tax_for_other"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('buy')}${$t('tm_buy_tax_for_other')}`"
+                    ></el-input>
+                  </el-form-item>
+                </div>
+              </el-collapse-item>
 
-            <el-form-item :label="$t('tm_max_hold_amount_per_wallet')" prop="contract_info.tm_max_hold_amount_per_wallet">
+              <el-collapse-item>
+                <template #title>
+                  <el-form-item
+                    class="flex-1"
+                    :label="$t('sell_tax')"
+                    prop="contract_info.sell_tax"
+                  >
+                    <el-input
+                      v-model="form.contract_info.sell_tax"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('sell_tax')}`"
+                    ></el-input>
+                  </el-form-item>
+                </template>
+                <div class="content">
+                  <el-form-item
+                    :label="$t('tm_sell_tax_for_fund')"
+                    prop="contract_info.tm_sell_tax_for_fund"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_sell_tax_for_fund"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('sell')}${$t('tm_buy_tax_for_fund')}`"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('tm_sell_tax_for_burn')"
+                    prop="contract_info.tm_sell_tax_for_burn"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_sell_tax_for_burn"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('sell')}${$t('tm_buy_tax_for_burn')}`"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('tm_sell_tax_for_lp')"
+                    prop="contract_info.tm_sell_tax_for_lp"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_sell_tax_for_lp"
+                      clearable
+                      :placeholder="`请${$t('pls')}${$t('sell')}${$t('tm_sell_tax_for_lp')}`"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('tm_sell_tax_for_team')"
+                    prop="contract_info.tm_sell_tax_for_team"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_sell_tax_for_team"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('sell')}${$t('tm_sell_tax_for_team')}`"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('tm_sell_tax_for_holders')"
+                    prop="contract_info.tm_sell_tax_for_holders"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_sell_tax_for_holders"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('sell')}${$t('tm_sell_tax_for_holders')}`"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('tm_sell_tax_for_lp_holders')"
+                    prop="contract_info.tm_sell_tax_for_lp_holders"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_sell_tax_for_lp_holders"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('sell')}${$t('tm_sell_tax_for_lp_holders')}`"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    :label="$t('tm_sell_tax_for_other')"
+                    prop="contract_info.tm_sell_tax_for_other"
+                  >
+                    <el-input
+                      v-model="form.contract_info.tm_sell_tax_for_other"
+                      clearable
+                      :placeholder="`${$t('pls')}${$t('sell')}${$t('tm_sell_tax_for_other')}`"
+                    ></el-input>
+                  </el-form-item>
+                </div>
+              </el-collapse-item>
+            </el-collapse>
+            <el-form-item
+              :label="$t('tm_max_hold_amount_per_wallet')"
+              prop="contract_info.tm_max_hold_amount_per_wallet"
+            >
               <el-input
                 v-model.number="form.contract_info.tm_max_hold_amount_per_wallet"
                 clearable
@@ -388,14 +370,14 @@
               ></el-input>
             </el-form-item>
           </div>
+          <span class="title">{{ $t('walletRemark') }}</span>
           <div class="box-card mb-100" style="margin-bottom: 100px">
-            <span class="title">{{ $t('walletRemark') }}</span>
             <div
               class="text-left flex-between bg-gray"
               v-for="(item, index) in form.wallet_tag"
               :key="index"
             >
-              <div>
+              <div class="flex-1">
                 <el-form-item :label="`${$t('address')}` + index" prop="address">
                   <el-input v-model="form.wallet_tag[index].address" clearable></el-input>
                 </el-form-item>
@@ -418,7 +400,7 @@
                   <el-input v-model="form.wallet_tag[index].remark" clearable></el-input>
                 </el-form-item>
               </div>
-              <el-form-item>
+              <el-form-item>&nbsp;&nbsp;
                 <el-button
                   type="danger"
                   plain
@@ -510,6 +492,14 @@ export default {
     VueCropper
   },
   data() {
+    const checkNum = (rule, value, callback) => {
+      let n = Number.isNaN(Number(value))
+      if (value !== '' && (n || (!n && (Number(value) < 0 || Number(value) > 100)))) {
+        callback(new Error(this.$t('plsNumber')))
+      } else {
+        callback()
+      }
+    }
     const initForm = {
       base_info: {
         symbol: '',
@@ -518,23 +508,12 @@ export default {
         totol_supply: 0,
         website: '',
         logoUrl: '',
-        // email: '',
         whitepaper: '',
         twitter: '',
         btok: '',
         qq: '',
         telegram: '',
-        // blog: '',
-        // reddit: '',
-        // slack: '',
-        // facebook: '',
-        // bitcointalk: '',
-        // wechat: '',
-        // linkedin: '',
         discord: '',
-        // description: '',
-        // intro_cn: '',
-        // intro_en: '',
         opening_at: 0
       },
       contract_info: {
@@ -569,25 +548,25 @@ export default {
       form: localStorage?.aveApplication ? JSON.parse(localStorage.aveApplication) : initForm,
       is_confirmed: false,
       rules: {
-        'base_info.token': [{ required: true, message: '必填项', trigger: 'blur' }],
-        'base_info.chain': [{ required: true, message: '必填项', trigger: 'blur' }],
-        'contract_info.buy_tax': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.sell_tax': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_buy_tax_for_fund': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_sell_tax_for_fund': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_buy_tax_for_burn': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_sell_tax_for_burn': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_buy_tax_for_lp': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_sell_tax_for_lp': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_buy_tax_for_team': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_sell_tax_for_team': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_buy_tax_for_holders': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_sell_tax_for_holders': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_buy_tax_for_lp_holders': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_sell_tax_for_lp_holders': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_buy_tax_for_other': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_sell_tax_for_other': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
-        'contract_info.tm_max_hold_amount_per_wallet': [{ type: 'number', message: this.$t('plsNumber'), trigger: 'blur' }],
+        'base_info.token': [{ required: true, message: this.$t('required'), trigger: 'blur' }],
+        'base_info.chain': [{ required: true, message: this.$t('required'), trigger: 'blur' }],
+        'contract_info.buy_tax': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.sell_tax': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_buy_tax_for_fund': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_sell_tax_for_fund': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_buy_tax_for_burn': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_sell_tax_for_burn': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_buy_tax_for_lp': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_sell_tax_for_lp': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_buy_tax_for_team': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_sell_tax_for_team': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_buy_tax_for_holders': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_sell_tax_for_holders': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_buy_tax_for_lp_holders': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_sell_tax_for_lp_holders': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_buy_tax_for_other': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_sell_tax_for_other': [{ trigger: 'blur', validator: checkNum }],
+        'contract_info.tm_max_hold_amount_per_wallet': [{ trigger: 'blur', validator: checkNum }]
       },
       tableData: [],
       dataLoading: false,
@@ -611,7 +590,7 @@ export default {
         fixedBox: true
       },
       file: '',
-      fileUrl: '',
+      fileUrl: localStorage?.fileUrl || '',
       getCropBlobLoading: false,
       chainList: [],
       loadingDraft: false,
@@ -631,7 +610,8 @@ export default {
         }
       },
       loadingSearch: false,
-      profile_picture: null
+      profile_picture: null,
+      activeNames: '1'
     }
   },
   watch: {
@@ -649,6 +629,13 @@ export default {
     this.getChainList()
   },
   methods: {
+    inputValue(value) {
+      console.log('----', value)
+      let n = Number.isNaN(Number(value))
+      if (n) {
+        return ''
+      }
+    },
     search() {
       this.$refs.formSearch.validate(valid => {
         if (valid) {
@@ -670,32 +657,23 @@ export default {
       getMainToken(tokenId).then(res => {
         let a = JSON.parse(res.token.appendix)
         console.log('----res----', a)
+        this.form.base_info.logoUrl = res?.token?.logo_url
+          ? 'https://www.avestorage.cloud/' + res?.token?.logo_url
+          : ''
         this.form.base_info.symbol = res?.token.symbol
         this.form.base_info.chain = res?.token.chain
         this.form.base_info.token = res?.token.token
         this.form.base_info.totol_supply = Number(res?.token.total)
         this.form.base_info.opening_at = res?.token.opening_at
-
         const aa = JSON.parse(res.token.appendix)
         this.form.base_info.website = aa?.website
-        // this.form.base_info.email = aa?.email
         this.form.base_info.whitepaper = aa?.whitepaper
         this.form.base_info.twitter = aa?.twitter
         this.form.base_info.twitter = aa?.twitter
         this.form.base_info.btok = aa?.btok
         this.form.base_info.qq = aa?.qq
         this.form.base_info.telegram = aa?.telegram
-        // this.form.base_info.blog = aa?.blog
-        // this.form.base_info.reddit = aa?.reddit
-        // this.form.base_info.slack = aa?.slack
-        // this.form.base_info.facebook = aa?.facebook
-        // this.form.base_info.bitcointalk = aa?.bitcointalk
-        // this.form.base_info.wechat = aa?.wechat
-        // this.form.base_info.linkedin = aa?.linkedin
         this.form.base_info.discord = aa?.discord
-        // this.form.base_info.description = aa?.description
-        // this.form.base_info.intro_cn = aa?.intro_cn
-        // this.form.base_info.intro_cn = aa?.intro_en
       })
     },
     // getTokenExtraDetail(tokenId) {
@@ -798,9 +776,11 @@ export default {
           this.confirmLoading = true
           let contract_info = {}
           for (var key in this.form.contract_info) {
-            contract_info[key] = this.form.contract_info[key] ? String(this.form.contract_info[key]) : ''
+            contract_info[key] = this.form.contract_info[key]
+              ? String(this.form.contract_info[key])
+              : ''
           }
-          let form = Object.assign({}, this.form, {contract_info: contract_info})
+          let form = Object.assign({}, this.form, { contract_info: contract_info })
           let data1 = JSON.stringify(form)
           applyToken(data1)
             .then(res => {
@@ -828,6 +808,7 @@ export default {
           confirmButtonText: this.$t('jump')
         })
         .then(() => {
+          this.reset()
           this.$router.push({ name: 'Home', query: { id: id } })
         })
         .catch(() => {})
@@ -851,6 +832,8 @@ export default {
         const file = new File([data], this.form.base_info.token)
         this.profile_picture = file
         this.fileUrl = window.URL.createObjectURL(file)
+        localStorage.fileUrl = this.fileUrl
+        console.log(' this.fileUrl', this.fileUrl)
         this.uploadDialogVisible = false
       })
     },
@@ -877,6 +860,7 @@ export default {
     reset() {
       this.$refs.form.resetFields()
       localStorage.removeItem('aveApplication')
+      localStorage.removeItem('fileUrl')
     },
     saveDraft() {
       this.loadingDraft = true
@@ -894,6 +878,25 @@ export default {
         }
         this.loadingDraft = false
       }, 1000)
+    },
+    formatIcon(tokenInfo) {
+      if (tokenInfo && typeof tokenInfo === 'string') {
+        let [address, chain] = tokenInfo.split('-')
+        if (address && chain) {
+          address = address?.replace?.(/:/g, '') || address
+          return `https://www.avestorage.cloud/token_icon/${chain}/${address}.png`
+        }
+        return ''
+      }
+      let address = tokenInfo?.address || tokenInfo?.token || ''
+      address = address?.replace?.(/:/g, '') || address
+      return (
+        tokenInfo?.logo_url ||
+        tokenInfo?.appendix?.logo_url ||
+        `https://www.avestorage.cloud/token_icon/${
+          tokenInfo?.chain || tokenInfo?.network || ''
+        }/${address}.png`
+      )
     }
   }
 }
@@ -955,7 +958,12 @@ input#uploaderFile-1 {
   border-radius: 10px;
   background: #fff;
   padding: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+}
+@media (min-width: 1024px) {
+  .box-card {
+     padding: 30px 60px;
+  }
 }
 .title {
   font-size: 16px;
@@ -963,6 +971,7 @@ input#uploaderFile-1 {
   margin: 15px auto 10px;
   display: block;
   margin-bottom: 20px;
+  text-align: left;
 }
 .footer {
   position: fixed;
@@ -977,14 +986,35 @@ input#uploaderFile-1 {
   z-index: 1;
 }
 .el-button {
-  padding: 15px 30px;
+  padding: 14px 30px;
 }
 .buy-in {
   text-align: left;
   font-size: 16px;
   font-weight: bold;
 }
+:deep().el-input {
+  max-width: 400px;
+}
+:deep().el-textarea__inner {
+  max-width: 400px;
+}
 :deep().el-input__inner {
-  padding: 18px 10px;
+  // padding: 18px 10px;
+}
+:deep().el-collapse {
+  margin-bottom: 20px;
+  .el-collapse-item__header {
+    padding-top: 20px;
+  }
+  .content {
+    padding: 20px;
+  }
+}
+:deep().el-form-item__label {
+  color: #000;
+}
+.flex-1 {
+  flex: 1;
 }
 </style>

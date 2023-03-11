@@ -1,7 +1,5 @@
 export function formatIcon(tokenInfo) {
-  if (tokenInfo && tokenInfo.logo_url) {
-    return store.state.globalConfig + tokenInfo.logo_url;
-  }
+
   if (tokenInfo && typeof tokenInfo === "string") {
     let [address, chain] = tokenInfo.split("-");
     if (address && chain) {

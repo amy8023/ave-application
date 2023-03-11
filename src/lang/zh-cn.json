@@ -68,5 +68,6 @@
   "pending": "已提交，待审核",
   "success": "提交成功",
   "jump": "查看链接",
-  "plsNumber": "请输入数字"
+  "plsNumber": "请输入0-100数字",
+  "required": "t必填项"
 }
